@@ -1,0 +1,5 @@
+python ./plot_template_grid.py
+
+python ./plot_star_spectra.py  /project/projectdirs/desi/spectro/redux/andes/exposures/20200315/00055643/stdstars-0-00055643.fits
+
+python ./plot_stars_colors.py /project/projectdirs/desi/spectro/redux/andes/exposures/20200315/00055643/stdstars-?-00055643.fits

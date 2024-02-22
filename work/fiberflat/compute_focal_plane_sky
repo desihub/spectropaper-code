@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+
+import sys,os
+import argparse
+import matplotlib.pyplot as plt
+import numpy as np
+import fitsio
+
+from astropy.table import Table
+
+from desispec.io import read_fibermap,read_frame,read_fiberflat
+from desispec.fiberflat import apply_fiberflat
+from desispec.fiberbitmasking import get_skysub_fiberbitmask_val
+
+
+def write_table(filename,res) :
+    t=Table()
+    for k in res.keys() :
+        t[k]=np.hstack(res[k])
+    t.write(filename,overwrite=True)
+    print("wrote",filename)
+
+
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('-i','--infile', type = str, default = None, required = True, nargs="*",
+                    help = 'path to one or several sframe fits files')
+parser.add_argument('-o','--outfile', type = str, default = None, required = False,
+                    help = 'save table in this file')
+
+args   = parser.parse_args()
+
+res={}
+for k in ["X","Y","FLUX","EXPID","TILEID"] :
+    res[k]=list()
+
+mask=get_skysub_fiberbitmask_val()
+
+for i,sfilename in enumerate(args.infile) :
+
+    print(sfilename)
+
+    filename = sfilename.replace("sframe","frame")
+
+    try :
+        fmap_head = fitsio.read_header(filename,"FIBERMAP")
+    except Exception as e :
+        print(e)
+        continue
+    try :
+        FAFLAVOR=fmap_head["FAFLAVOR"]
+    except Exception as e :
+        print(e)
+        continue
+
+    if FAFLAVOR not in ["mainbright","maindark" ] :
+        print(f"skip {filename} with FAFLAVOR={FAFLAVOR}")
+        continue
+
+    frame = read_frame(filename)
+
+
+    ffilename = filename.replace("frame","fiberflatexp")
+    flat = read_fiberflat(ffilename)
+
+    apply_fiberflat(frame,flat)
+
+
+    selection = (frame.fibermap["OBJTYPE"]=="SKY")&(frame.fibermap["FIBERSTATUS"]&mask==0)
+    #fibers = np.sort(frame.fibermap["FIBER"][selection])
+
+    res["X"].append(frame.fibermap["FIBERASSIGN_X"][selection])
+    res["Y"].append(frame.fibermap["FIBERASSIGN_Y"][selection])
+
+    b=200 # to avoid edge of camera with variable dichroic transmission
+    e=frame.wave.size-200 # to avoid edge of camera with variable dichroic transmission
+
+    vals = np.median(frame.flux[selection][:,b:e],axis=1)
+    res["FLUX"].append(vals)
+    res["EXPID"].append(np.repeat(frame.meta["EXPID"],vals.size))
+    res["TILEID"].append(np.repeat(fmap_head["TILEID"],vals.size))
+
+    if i%10 == 0 :
+        write_table(args.outfile,res)
+
+write_table(args.outfile,res)

@@ -1,0 +1,3 @@
+python ./plot_dflux_xy.py -i ./20211*/calibstars-b-4500A-5500A-xy-*.fits --what 4500A-5500A --no-colorbar
+python ./plot_dflux_xy.py -i ./20211*/calibstars-r-6000A-7300A-xy-*.fits --what 6000A-7300A --no-colorbar
+python ./plot_dflux_xy.py -i ./20211*/calibstars-z-8500A-9800A-xy-*.fits --what 8500A-9800A --no-colorbar

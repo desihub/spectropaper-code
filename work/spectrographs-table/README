@@ -1,0 +1,2 @@
+python make_csv_table.py ~/redux/daily/exposure_tables/202206/exposure_table_20220610.csv
+python make_tex_table2.py > spectrographs-table.tex

@@ -1,0 +1,14 @@
+./plot_df.py
+
+
+# try to measure relation between deltachi2 and efftime ...
+
+
+https://desi.lbl.gov/trac/wiki/SurveyOps/SurveySpeed
+
+SPEED_DARK = <FIBERFRAC_ELG / FIBERFRAC_ELG_NOMINAL * TRANSPARENCY / AIRFAC>2 * <AIRCORRECTION>
+
+
+##########
+
+python plot_efftime.py

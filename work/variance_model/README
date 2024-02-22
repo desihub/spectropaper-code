@@ -1,0 +1,8 @@
+Add images of inverse variance obtained without and with the image modeling.
+Let's take one random dark time image in r camera ...
+
+n=20220307
+e=00125343
+desi_preproc -i $DESI_SPECTRO_DATA/$n/$e/desi-$e.fits.fz --cam r0  -o preproc-r0-$n-e-without-variance-model.fits
+desi_preproc -i $DESI_SPECTRO_DATA/$n/$e/desi-$e.fits.fz --cam r0  --model-variance -o preproc-r0-$n-e-with-variance-model.fits
+./plot.py

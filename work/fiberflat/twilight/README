@@ -1,0 +1,110 @@
+Resumming this work in 2022.
+
+Will use median stacks of many observations
+
+
+
+=====================
+
+20200315 	55565 	TWILIGHT 	18.8
+20200315 	55564 	TWILIGHT 	13.6
+20200315 	55563 	TWILIGHT 	10.0
+20200315 	55562 	TWILIGHT 	7.5
+20200315 	55561 	TWILIGHT 	5.6
+20200315 	55560 	TWILIGHT 	4.3
+20200315 	55559 	TWILIGHT 	3.3
+20200315 	55558 	TWILIGHT 	2.5
+20200315 	55557 	TWILIGHT 	1.9
+20200315 	55556 	TWILIGHT 	1.5
+
+need to process with Andes calib ...
+
+use night 20200313 for calib
+
+
+desi_proc -n 20200315 -e 55556 --traceshift --noskysub --nofluxcalib --calibnight 20200313 --batch --queue realtime
+Wrote /project/projectdirs/desi/spectro/redux/jguy/run/scripts/night/20200315/twilight-20200315-00055556-a0123456789.slurm
+logfile will be /project/projectdirs/desi/spectro/redux/jguy/run/scripts/night/20200315/twilight-20200315-00055556-a0123456789-JOBID.log
+Submitted batch job 34023605
+
+squeue -u jguy
+
+
+(
+for e in 55556 55557 55558 55559 55560 ; do
+desi_proc -n 20200315 -e $e --traceshift --noskysub --nofluxcalib --calibnight 20200313 --batch --queue realtime
+done
+)
+
+
+(
+for e in 55559 ; do
+for s in `seq 0 9` ; do
+for b in b r z ; do
+
+#fnight=20200313
+fnight=20200309
+
+c=$b$s
+
+ifile=~/redux/jguy/exposures/20200315/000$e/frame-$c-000$e.fits
+if [ ! -f $ifile ] ; then
+   echo missing $ifile
+   continue
+fi
+
+ofile=~/redux/jguy/exposures/20200315/000$e/fframe-$c-000$e-$fnight.fits
+if [ ! -f $ofile ] ; then
+   desi_process_exposure -i $ifile --fiberflat ~/redux/jguy/calibnight/$fnight/fiberflatnight-$c-$fnight.fits -o $ofile
+fi
+
+done
+done
+done
+)
+
+./plot_frame -i ~/redux/jguy/exposures/20200315/00055556/fframe-b*-00055556.fits --focal-plane --norm --output-focal-plane fframe-b.csv
+./plot_frame -i ~/redux/jguy/exposures/20200315/00055556/fframe-r*-00055556.fits --focal-plane --norm --output-focal-plane fframe-r.csv
+./plot_frame -i ~/redux/jguy/exposures/20200315/00055556/fframe-z*-00055556.fits --focal-plane --norm --output-focal-plane fframe-z.csv
+
+
+# test with other expoosure and other flat show similar result
+./plot_frame -i ~/redux/jguy/exposures/20200315/00055559/fframe-r*-00055559.fits --focal-plane --norm
+./plot_frame -i ~/redux/jguy/exposures/20200315/00055559/fframe-r*-00055559-20200309.fits --focal-plane --norm
+
+
+=========================
+
+rerun
+
+(
+for e in 55559 ; do
+for s in `seq 0 9` ; do
+for b in b r z ; do
+
+fnight=20200313
+#fnight=20200309
+
+c=$b$s
+
+ifile=~/redux/daily/exposures/20200315/000$e/frame-$c-000$e.fits
+if [ ! -f $ifile ] ; then
+   echo missing $ifile
+   continue
+fi
+
+ofile=./fframe-$c-000$e-$fnight.fits
+if [ ! -f $ofile ] ; then
+   desi_process_exposure -i $ifile --fiberflat ~/redux/daily/calibnight/$fnight/fiberflatnight-$c-$fnight.fits --no-xtalk --no-tsnr -o $ofile &
+fi
+
+done
+done
+wait
+done
+)
+
+
+python ./plot_frame -i ./fframe-b*-00055559-20200313.fits --focal-plane --norm -o focal_plane_twilight_b.pdf --output-focal-plane focal_plane_twilight_b.csv
+python ./plot_frame -i ./fframe-r*-00055559-20200313.fits --focal-plane --norm -o focal_plane_twilight_r.pdf --output-focal-plane focal_plane_twilight_r.csv
+python ./plot_frame -i ./fframe-z*-00055559-20200313.fits --focal-plane --norm -o focal_plane_twilight_z.pdf --output-focal-plane focal_plane_twilight_z.csv

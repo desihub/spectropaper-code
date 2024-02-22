@@ -1,0 +1,3 @@
+At NERSC,
+cd /global/cfs/cdirs/desi/users/jguy/sm5-r-gains
+desi_compute_gain_from_spectra -i qframe-r2-000629{41,42,43,44,45,46,47,48,49,50,51,52}.fits  --plot

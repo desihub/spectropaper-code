@@ -1,0 +1,3 @@
+Try to compare FIBERFLUX from imaging with spectroscopy.
+./compute.py
+./plot.py

@@ -1,0 +1,17 @@
+
+Data is in /global/cfs/cdirs/desi/users/jguy/fiber_crosstalk/
+
+
+# measured PSF tails in sparse arclamp data
+
+for psf-cross-profile-sm1-z.pdf
+
+./analyse_sparse_arclamp.py
+
+
+# measured crosstalk
+./plot_fiber_crosstalk.py fiber-crosstalk-bundles-all-z0.fits
+
+# but we don't use that. we use a cross-talk 2D model ...
+
+./plot_fiber_crosstalk_coeffs.py

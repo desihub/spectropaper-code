@@ -1,0 +1,79 @@
+See https://desi.lbl.gov/trac/wiki/Pipeline/Commissioning/PSFcommission/PSFStability/PetalZero20191113
+See also https://desi.lbl.gov/DocDB/cgi-bin/private/ShowDocument?docid=5525
+
+file 	index 	Time 	FVC images 	arc expids
+cmx_psf-3 	0 	14:35 	fvc.20191113163541.fits 	0027504 - 06
+cmx_psf-3 	1 	14:40 	fvc.20191113164215.fits 	None
+cmx_psf-3 	2 	14:44 	fvc.20191113164328.fits 	0027507 - 09
+cmx_psf-4 	0 	14:51 	fvc.20191113165240.fits 	0027510 - 12
+cmx_psf-4 	1 	14:58 	fvc.20191113165920.fits 	0027513 - 15
+cmx_psf-4 	2 	15:05 	fvc.20191113170457.fits 	0027516 - 18
+cmx_psf-1 	0 	15:10 	fvc.20191113171234.fits 	0027519 - 21
+cmx_psf-1 	1 	15:17 	fvc.20191113171928.fits 	0027522 - 24
+cmx_psf-1 	2 	15:24 	fvc.20191113172516.fits 	0027525 - 27
+cmx_psf-2 	0 	15:30 	fvc.20191113173208.fits 	0027528 - 30
+cmx_psf-2 	1 	15:39 	fvc.20191113173756.fits 	0027531 - 33
+cmx_psf-2 	2 	15:44 	fvc.20191113174539.fits 	0027534 - 35
+
+ Positioners that moved every time:
+
+[‘M02780’, ‘M03168’, ‘M03353’, ‘M03848’, ‘M04015’, ‘M04062’,
+ ‘M04390’, ‘M04527’, ‘M04653’, ‘M04662’, ‘M04663’, ‘M04666’,
+ ‘M04674’, ‘M04684’, ‘M04760’, ‘M04787’, ‘M05225’, ‘M05252’,
+ ‘M05528’, ‘M05692’, ‘M05701’, ‘M05704’, ‘M05725’, ‘M05726’,
+ ‘M05781’, ‘M05811’, ‘M05814’, ‘M05816’, ‘M05843’, ‘M05845’,
+ ‘M05862’, ‘M05889’, ‘M05897’, ‘M05930’, ‘M05977’, ‘M05980’,
+ ‘M05983’, ‘M06080’, ‘M06157’, ‘M06160’, ‘M06163’, ‘M06167’,
+ ‘M06171’, ‘M06609’, ‘M06666’, ‘M06711’, ‘M06713’, ‘M06734’,
+ ‘M06763’, ‘M06765’, ‘M06767’, ‘M06769’, ‘M06777’, ‘M07017’,
+ ‘M07056’, ‘M07269’, ‘M07337’, ‘M07343’, ‘M07345’, ‘M07477’,
+ ‘M07509’, ‘M07808’, ‘M07840’, ‘M07892’, ‘M07907’, ‘M07916’,
+ ‘M07918’, ‘M07935’, ‘M07942’, ‘M07943’, ‘M07946’, ‘M07957’,
+ ‘M07959’, ‘M07962’, ‘M07963’, ‘M07967’, ‘M07971’, ‘M08017’,
+ ‘M08026’, ‘M08054’, ‘M08056’, ‘M08060’, ‘M08071’, ‘M08096’,
+ ‘M08135’, ‘M08143’, ‘M08147’, ‘M08150’, ‘M08151’, ‘M08154’,
+ ‘M08158’, ‘M08162’, ‘M08180’, ‘M08182’, ‘M08189’, ‘M08190’,
+ ‘M08192’, ‘M08193’]
+
+Disabled :
+
+[‘M02956’, ‘M03090’, ‘M03848’, ‘M04062’, ‘M04343’, ‘M04515’,
+ ‘M04529’, ‘M05218’, ‘M05703’, ‘M05842’, ‘M05862’, ‘M05871’,
+ ‘M05888’, ‘M05925’, ‘M05928’, ‘M05977’, ‘M05980’, ‘M06167’,
+ ‘M06612’, ‘M07364’]
+
+n=20191113
+cam=r0
+
+for ee in `seq 27504 27535` ; do
+
+e=000$ee
+
+ofile=preproc-$cam-$e.fits
+if [ ! -f $ofile ] ; then
+desi_preproc -i ~/data/$n/$e/desi-$e.fits.fz --cam $cam -o $ofile
+fi
+
+ofile=psf-$cam-$e.fits
+if [ ! -f $ofile ] ; then
+desi_compute_trace_shifts -i  preproc-$cam-$e.fits --psf /global/cfs/cdirs/desi/users/jguy/teststand/desi_spectro_calib/spec/old/sp0/psf-sm1-r-science-slit-20191108.fits --arc-lamps -o $ofile
+fi
+
+ofile=qframe-$cam-$e.fits
+if [ ! -f $ofile ] ; then
+desi_qproc -i preproc-$cam-$e.fits --psf psf-$cam-$e.fits -o $ofile
+fi
+
+done
+
+for e1 in `seq 27504 3 27531` ; do
+e2=$((e1+1))
+e3=$((e2+1))
+echo $e1 $e2 $e3
+ofile=qframe-$cam-000$e1-000$e3.fits
+if [ ! -f $ofile ] ; then
+./median_frame.py -i qframe-$cam-000$e1.fits qframe-$cam-000$e2.fits qframe-$cam-000$e3.fits -o $ofile
+fi
+done
+
+./compare_frame.py -i qframe-r0-*-*.fits

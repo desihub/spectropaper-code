@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+
+import sys,os
+import argparse
+import matplotlib.pyplot as plt
+import numpy as np
+
+from astropy.table import Table,vstack
+
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('-i','--infile', type = str, default = None, required = True,
+                    help = 'path to sky table',nargs="*")
+
+args   = parser.parse_args()
+
+tables=[Table.read(filename) for filename in args.infile]
+t=vstack(tables)
+print(t.dtype.names)
+
+for expid in np.unique(t["EXPID"]) :
+    selection=(t["EXPID"]==expid)&(t["FLUX"]>0)
+    mflux=np.median(t["FLUX"][selection])
+    rms=np.std(t["FLUX"][selection])
+    tileid=t["TILEID"][selection][0]
+    #if tileid==8793 :
+    #    t["FLUX"][selection]=0
+    #    continue
+    print(expid,tileid,mflux,rms/mflux)
+    t["FLUX"][selection]/=mflux
+
+selection=(t["FLUX"]>0.9)&(t["FLUX"]<1.1) # verified that only due to light pollution
+#bins=(80,80)
+xmax=410
+n1d=40
+bins=(np.linspace(-xmax,xmax,n1d),np.linspace(-xmax,xmax,n1d))
+h1,binx,biny=np.histogram2d(t["X"][selection],t["Y"][selection],bins=bins)
+hf,binx,biny=np.histogram2d(t["X"][selection],t["Y"][selection],bins=bins,weights=t["FLUX"][selection])
+
+msky=hf/h1
+
+
+print(binx)
+print(biny)
+
+fig=plt.figure("flat-sky-2d")
+plt.imshow(msky.T,origin="lower",vmin=0.95,vmax=1.05,extent=(-xmax,xmax,-xmax,xmax)) # orientation validated with scatter
+plt.xlabel("Focal plane X (mm)")
+plt.ylabel("Focal plane Y (mm)")
+cb=plt.colorbar()
+cb.set_label("Normalized flat-fielded sky background")
+#plt.figure()
+#plt.scatter(t["X"][selection],t["Y"][selection],c=t["FLUX"][selection],vmin=0.9,vmax=1.1)
+plt.tight_layout()
+fig.savefig("flat-sky-2d.pdf")
+
+fig2=plt.figure("flat-sky-profile",figsize=(5,3))
+r=np.sqrt(t["X"]**2+t["Y"]**2)
+
+bins=np.linspace(0,xmax,n1d)
+h1,junk=np.histogram(r[selection],bins=bins)
+hr,junk=np.histogram(r[selection],bins=bins,weights=r[selection])
+hf,junk=np.histogram(r[selection],bins=bins,weights=t["FLUX"][selection])
+hf2,junk=np.histogram(r[selection],bins=bins,weights=t["FLUX"][selection]**2)
+
+ok=(h1>3)
+mr=hr[ok]/h1[ok]
+msky=hf[ok]/h1[ok]
+rms=np.sqrt(hf2[ok]/h1[ok]-msky**2)
+
+#plt.plot(r[selection],t["FLUX"][selection],".",alpha=0.2)
+#plt.plot(mr,msky,"-")
+plt.errorbar(mr,msky,rms,fmt="o")
+
+plt.grid()
+plt.xlabel("Distance from center of focal plane (mm)")
+plt.ylabel("Normed flat-fielded sky level")
+
+plt.tight_layout()
+fig2.savefig("flat-sky-profile.pdf")
+plt.show()

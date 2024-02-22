@@ -1,0 +1,1 @@
+python plot_fiberflat_vs_humidity.py $DESI_SPECTRO_CALIB/spec/sm10/fiberflat-vs-humidity-sm10-b1-20200101.fits

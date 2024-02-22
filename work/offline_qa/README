@@ -1,0 +1,1 @@
+python plot-amp-cte.py -i /global/cfs/cdirs/desi/spectro/redux/daily/preproc/20220524/00136562/preproc-z3-00136562.fits.gz --nrow 21 --xminmax 1500 2150

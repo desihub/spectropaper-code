@@ -1,0 +1,19 @@
+
+./compute_focal_plane_sky -i ~/redux/daily/exposures/20220205/00*/sframe-r*.fits -o sky-r-20220205.csv
+./compute_focal_plane_sky -i ~/redux/daily/exposures/20220206/00*/sframe-r*.fits -o sky-r-20220206.csv
+./compute_focal_plane_sky -i ~/redux/daily/exposures/20220207/00*/sframe-r*.fits -o sky-r-20220207.csv
+./compute_focal_plane_sky -i ~/redux/daily/exposures/20220208/00*/sframe-r*.fits -o sky-r-20220208.csv
+./plot_focal_plane_sky -i sky-r-2022020*.csv
+
+
+=============
+
+
+python ./plot_fiberflat.py -i /global/cfs/cdirs/desi/spectro/redux/andes/exposures/20200313/00055314/fiberflat-b8-00055314.fits --spec --fibers 10,60,110,160,210,260,310,360,410,460
+python ./plot_fiberflat.py -i /global/cfs/cdirs/desi/spectro/redux/andes/exposures/20200313/00055314/fiberflat-r8-00055314.fits --spec --fibers 10,60,110,160,210,260,310,360,410,460
+python ./plot_fiberflat.py -i /global/cfs/cdirs/desi/spectro/redux/andes/exposures/20200313/00055314/fiberflat-z8-00055314.fits --spec --fibers 10,60,110,160,210,260,310,360,410,460
+
+
+python ./plot_fiberflat.py -i /global/cfs/cdirs/desi/spectro/redux/andes/calibnight/20200313/fiberflatnight-b8-20200313.fits  --spec --fibers 10,60,110,160,210,260,310,360,410,460
+python ./plot_fiberflat.py -i /global/cfs/cdirs/desi/spectro/redux/andes/calibnight/20200313/fiberflatnight-r8-20200313.fits  --spec --fibers 10,60,110,160,210,260,310,360,410,460
+python ./plot_fiberflat.py -i /global/cfs/cdirs/desi/spectro/redux/andes/calibnight/20200313/fiberflatnight-z8-20200313.fits  --spec --fibers 10,60,110,160,210,260,310,360,410,460

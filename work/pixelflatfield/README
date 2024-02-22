@@ -1,0 +1,5 @@
+Add image of rawdata and pixflat for one camera
+
+
+cp ~/project/pixflats-2021/sm2/{mean-r8.fits,pixflat-sm2-r8-20210816.fits.gz} .
+./plot.py

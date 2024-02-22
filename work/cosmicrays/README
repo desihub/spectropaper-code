@@ -1,0 +1,9 @@
+1) Pick a long exposure, find a region of interest in r or z camera
+
+At Kitt Peak (nersc down today)
+desi_preproc -i /exposures/desi/20220225/00124034/desi-00124034.fits.fz --cam r0 -o preproc-r0-00124034.fits --nocosmic
+
+2) Apply cosmic ray reject, stopping a each step (what hacks to the code, copied here)
+3) Plot the mask
+
+./runtest.py

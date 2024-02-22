@@ -1,0 +1,49 @@
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b1-*.fits -o psfxy-b1.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r1-*.fits -o psfxy-r1.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z1-*.fits -o psfxy-z1.csv
+
+
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r0*.fits -o psfxy-r0.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r1*.fits -o psfxy-r1.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r2*.fits -o psfxy-r2.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r3*.fits -o psfxy-r3.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r4*.fits -o psfxy-r4.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r5*.fits -o psfxy-r5.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r6*.fits -o psfxy-r6.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r7*.fits -o psfxy-r7.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r8*.fits -o psfxy-r8.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-r9*.fits -o psfxy-r9.csv
+
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b0*.fits -o psfxy-b0.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b1*.fits -o psfxy-b1.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b2*.fits -o psfxy-b2.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b3*.fits -o psfxy-b3.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b4*.fits -o psfxy-b4.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b5*.fits -o psfxy-b5.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b6*.fits -o psfxy-b6.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b7*.fits -o psfxy-b7.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b8*.fits -o psfxy-b8.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-b9*.fits -o psfxy-b9.csv
+
+
+
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z0*.fits -o psfxy-z0.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z1*.fits -o psfxy-z1.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z2*.fits -o psfxy-z2.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z3*.fits -o psfxy-z3.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z4*.fits -o psfxy-z4.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z5*.fits -o psfxy-z5.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z6*.fits -o psfxy-z6.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z7*.fits -o psfxy-z7.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z8*.fits -o psfxy-z8.csv
+./psfxy.py -i /global/homes/j/jguy/redux/daily/exposures/*/*/fit-psf-z9*.fits -o psfxy-z9.csv
+
+
+
+
+# get telemetry
+./db.py
+
+# plot dxdy figure for paper
+./plot-dxdy-single.py
+./plot-dxdy-single-bis.py

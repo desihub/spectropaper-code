@@ -1,0 +1,166 @@
+#######################################################################################
+# Analysis done at NERSC in /global/cfs/cdirs/desi/users/jguy/spectropaper/work/psf
+#######################################################################################
+
+ln -s /global/cfs/cdirs/desi/spectro/redux/andes/preproc/20200315/00055705/preproc-b1-00055705.fits .
+ln -s /global/cfs/cdirs/desi/spectro/redux/andes/preproc/20200315/00055705/preproc-r1-00055705.fits .
+ln -s /global/cfs/cdirs/desi/spectro/redux/andes/preproc/20200315/00055705/preproc-z1-00055705.fits .
+ln -s /global/cfs/cdirs/desi/spectro/redux/andes/calibnight/20200315/psfnight-b1-20200315.fits .
+ln -s /global/cfs/cdirs/desi/spectro/redux/andes/calibnight/20200315/psfnight-r1-20200315.fits .
+ln -s /global/cfs/cdirs/desi/spectro/redux/andes/calibnight/20200315/psfnight-z1-20200315.fits .
+
+
+
+# refit psf of one bundle
+
+export OMP_NUM_THREADS=16
+desi_psf_fit -a preproc-b1-00055705.fits --in-psf psfnight-b1-20200315.fits --first-bundle 10 --last-bundle 10 --out-spots spots-b1-00055705-10.xml --out-psf psf-b1-00055705-10.fits --out-psf-xml psf-b1-00055705-10.xml |& tee desi_psf_fit.log
+specex_psf_residuals --psf psf-b1-00055705-10.xml --spots spots-b1-00055705-10.xml --in preproc-b1-00055705.fits --out res-b1-00055705-10.fits -v
+desi_psf_fit -a preproc-r1-00055705.fits --in-psf psfnight-r1-20200315.fits --first-bundle 10 --last-bundle 10 --out-spots spots-r1-00055705-10.xml --out-psf psf-r1-00055705-10.fits --out-psf-xml psf-r1-00055705-10.xml |& tee desi_psf_fit.log
+specex_psf_residuals --psf psf-r1-00055705-10.xml --spots spots-r1-00055705-10.xml --in preproc-r1-00055705.fits --out res-r1-00055705-10.fits -v
+desi_psf_fit -a preproc-z1-00055705.fits --in-psf psfnight-z1-20200315.fits --first-bundle 10 --last-bundle 10 --out-spots spots-z1-00055705-10.xml --out-psf psf-z1-00055705-10.fits --out-psf-xml psf-z1-00055705-10.xml |& tee desi_psf_fit.log
+specex_psf_residuals --psf psf-z1-00055705-10.xml --spots spots-z1-00055705-10.xml --in preproc-z1-00055705.fits --out res-z1-00055705-10.fits -v
+
+
+res=res-z1-00055705-10.fits
+ds9 $res[0] $res[1] $res[2] $res[3] &
+
+# new b1 below
+#python ./inspect_residuals.py res-b1-00055705-10.fits preproc-b1-00055705.fits psf-b1-00055705-10.fits 3651 4360 5947
+python ./inspect_residuals.py res-r1-00055705-10.fits preproc-r1-00055705.fits psf-r1-00055705-10.fits 5854.5 7035 7637
+python ./inspect_residuals.py res-z1-00055705-10.fits preproc-z1-00055705.fits psf-z1-00055705-10.fits 7604 8780 9803
+
+====
+
+
+Date: 2022/03/18
+
+Trying to update the plots with new preprocessing ...
+ ZERO /global/homes/j/jguy/data/20200315/00055546/desi-00055546.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055547/desi-00055547.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055548/desi-00055548.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055549/desi-00055549.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055550/desi-00055550.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055551/desi-00055551.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055552/desi-00055552.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055553/desi-00055553.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055554/desi-00055554.fits.fz
+ ZERO /global/homes/j/jguy/data/20200315/00055555/desi-00055555.fits.fz
+
+imgs=""
+for e in `seq 55546 55555` ; do
+imgs=`echo $imgs /global/homes/j/jguy/data/20200315/000$e/desi-000$e.fits.fz`
+done
+for cam in b1 r1 z1 ; do
+desi_compute_bias -i $imgs --camera $cam -o bias-$cam-20200315.fits
+done
+for cam in b1 r1 z1 ; do
+desi_preproc -i  /global/homes/j/jguy/data/20200315/00055705/desi-00055705.fits.fz --cam $cam --bias bias-$cam-20200315.fits -o preproc-$cam-00055705-new.fits
+done
+
+desi_compute_psf --input-image preproc-b1-00055705-new.fits --output-psf psf-b1-00055705-10-new.fits  --bundlesize 25  --specmin 250 --nspec 25
+
+python inspect_residuals.py res-b1-00055705-10.fits preproc-b1-00055705-new.fits psf-b1-00055705-10-new.fits 3651 4360 5947
+
+
+====
+
+# rerun with 3 bundles to get the full model in the region between bundles right
+
+export OMP_NUM_THREADS=16
+
+desi_psf_fit -a preproc-b1-00055705.fits --in-psf psfnight-b1-20200315.fits --first-bundle 9 --last-bundle 11 --out-spots spots-b1-00055705-9-10-11.xml --out-psf psf-b1-00055705-9-10-11.fits --out-psf-xml psf-b1-00055705-9-10-11.xml |& tee desi_psf_fit.log
+specex_psf_residuals --psf psf-b1-00055705-9-10-11.xml --spots spots-b1-00055705-9-10-11.xml --in preproc-b1-00055705.fits --out res-b1-00055705-9-10-11.fits -v
+
+desi_psf_fit -a preproc-r1-00055705.fits --in-psf psfnight-r1-20200315.fits --first-bundle 9 --last-bundle 11 --out-spots spots-r1-00055705-9-10-11.xml --out-psf psf-r1-00055705-9-10-11.fits --out-psf-xml psf-r1-00055705-9-10-11.xml |& tee desi_psf_fit.log
+specex_psf_residuals --psf psf-r1-00055705-9-10-11.xml --spots spots-r1-00055705-9-10-11.xml --in preproc-r1-00055705.fits --out res-r1-00055705-9-10-11.fits -v
+
+desi_psf_fit -a preproc-z1-00055705.fits --in-psf psfnight-z1-20200315.fits --first-bundle 9 --last-bundle 11 --out-spots spots-z1-00055705-9-10-11.xml --out-psf psf-z1-00055705-9-10-11.fits --out-psf-xml psf-z1-00055705-9-10-11.xml |& tee desi_psf_fit.log
+specex_psf_residuals --psf psf-z1-00055705-9-10-11.xml --spots spots-z1-00055705-9-10-11.xml --in preproc-z1-00055705.fits --out res-z1-00055705-9-10-11.fits -v
+
+
+./inspect_residuals_xprof.py res-b1-00055705-9-10-11.fits preproc-b1-00055705.fits psf-b1-00055705-9-10-11.fits
+./inspect_residuals_xprof.py res-r1-00055705-9-10-11.fits preproc-r1-00055705.fits psf-r1-00055705-9-10-11.fits
+./inspect_residuals_xprof.py res-z1-00055705-9-10-11.fits preproc-z1-00055705.fits psf-z1-00055705-9-10-11.fits
+
+===
+
+# NeI 7034.352 1 85000
+
+./plot_psf.py --psf psf-r1-00055705-9-10-11.fits --fiber 260 --wavelength 7034.352 --preproc preproc-r1-00055705.fits
+
+
+===
+
+show the FWHM
+
+./compute_fwhm.py -i psfnight-b1-20200315.fits -o fwhm-b1-20200315.txt --plot
+./compute_fwhm.py -i psfnight-r1-20200315.fits -o fwhm-r1-20200315.txt --plot
+./compute_fwhm.py -i psfnight-z1-20200315.fits -o fwhm-z1-20200315.txt --plot
+./plot_fwhm.py
+
+===
+
+stability
+
+
+./psf_stability_study.py --psf /global/cfs/cdirs/desi/spectro/redux/andes/exposures/{20200313,20200314,20200315}/*/fit-psf-b1-*.fits --fibers 10,100,200,300,400,490 -o stability-b1-several-days.csv
+./psf_stability_study.py --psf /global/cfs/cdirs/desi/spectro/redux/andes/exposures/{20200313,20200314,20200315}/*/fit-psf-r1-*.fits --fibers 10,100,200,300,400,490 -o stability-r1-several-days.csv
+./psf_stability_study.py --psf /global/cfs/cdirs/desi/spectro/redux/andes/exposures/{20200313,20200314,20200315}/*/fit-psf-z1-*.fits --fibers 10,100,200,300,400,490 -o stability-z1-several-days.csv
+
+./plot_psf_stability_vs_time.py -i stability-b1-several-days.csv
+./plot_psf_stability_vs_time.py -i stability-r1-several-days.csv
+./plot_psf_stability_vs_time.py -i stability-z1-several-days.csv
+
+
+desi_header -i /global/cfs/cdirs/desi/spectro/data/20200313/000*/desi-000*.fits.fz  --hdu 1 -k EXPID OBSTYPE EXPTIME MOUNTEL MOUNTAZ DOMEAZ  --no | grep ARC
+
+# EXPID OBSTYPE EXPTIME MOUNTEL MOUNTAZ DOMEAZ
+ 55166 ARC 5.0 41.037527 73.492843 253.055
+ 55167 ARC 5.0 41.037524 73.492837 253.055
+ 55168 ARC 5.0 41.037521 73.492834 253.055
+ 55169 ARC 5.0 41.037524 73.492833 253.056
+ 55170 ARC 5.0 41.037527 73.492831 253.055
+ 55207 ARC 5.0 41.035357 179.998959 359.3
+ 55208 ARC 5.0 41.03536 179.998953 359.299
+ 55209 ARC 5.0 41.035361 179.998949 359.3
+ 55210 ARC 5.0 41.03536 179.998954 359.299
+ 55211 ARC 5.0 41.035357 179.99895 359.299
+ 55248 ARC 5.0 41.037898 286.508886 107.103
+ 55249 ARC 5.0 41.037899 286.508884 107.103
+ 55250 ARC 5.0 41.037898 286.508882 107.103
+ 55251 ARC 5.0 41.037908 286.508882 107.104
+ 55252 ARC 5.0 41.037897 286.508891 107.104
+ 55289 ARC 5.0 41.034037 359.999831 180.369
+ 55290 ARC 5.0 41.034036 359.999829 180.369
+ 55291 ARC 5.0 41.034036 359.999831 180.368
+ 55292 ARC 5.0 41.034031 359.999832 180.368
+ 55293 ARC 5.0 41.034032 359.999831 180.369
+
+=====
+
+
+2020-03-14T01:25:19.396727 55166 ARC 5.0 45.147115 75.076889 787.4
+2020-03-14T05:28:28.045643 55293 ARC 5.0 40.990222 358.856213 789.3
+
+2020-03-15T13:29:42.918037 55492 ARC 5.0 44.373579 74.783568 790.4
+2020-03-15T14:07:15.425475 55523 ARC 5.0 52.127351 77.638568 790.7
+
+2020-03-16T13:02:51.513832 55705 ARC 5.0 44.499292 74.831376 789.7
+2020-03-16T13:04:04.292565 55706 ARC 5.0 44.747378 74.925568 789.7
+2020-03-16T13:05:16.023703 55707 ARC 5.0 44.993863 75.018941 789.7
+2020-03-16T13:06:36.842478 55708 ARC 5.0 45.269575 75.123138 789.7
+2020-03-16T13:07:47.930137 55709 ARC 5.0 45.514572 75.215516 789.7
+
+===
+
+stability from night to night
+
+./psf_stability_study_nightly_average.py --psf  $DESI_SPECTRO_REDUX/blanc/calibnight/202012*/psfnight-b1*.fits --fibers 10,100,200,300,400,490 -o stability-b1-nights.csv
+./psf_stability_study_nightly_average.py --psf  $DESI_SPECTRO_REDUX/blanc/calibnight/202012*/psfnight-r1*.fits --fibers 10,100,200,300,400,490 -o stability-r1-nights.csv
+./psf_stability_study_nightly_average.py --psf  $DESI_SPECTRO_REDUX/blanc/calibnight/202012*/psfnight-z1*.fits --fibers 10,100,200,300,400,490 -o stability-z1-nights.csv
+
+./plot_psf_stability_vs_night.py -i stability-b1-nights.csv
+./plot_psf_stability_vs_night.py -i stability-r1-nights.csv
+./plot_psf_stability_vs_night.py -i stability-z1-nights.csv
+label

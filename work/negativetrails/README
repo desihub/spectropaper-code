@@ -1,0 +1,19 @@
+Find a example in SM6-r amplifier B which is the worst.
+
+At nersc:
+
+One arc calibration image:
+
+desi_preproc -i ~/data/20220315/00126235/desi-00126235.fits.fz --cam r3 -o preproc-r3-00126235.fits
+desi_preproc -i ~/data/20220315/00126235/desi-00126235.fits.fz --cam r3 -o preproc-r3-00126235-nocorr.fits  --nodarktrail
+
+
+One longer exposure (to find a bright cosmic ...)
+
+desi_preproc -i ~/data/20220315/00126242/desi-00126242.fits.fz --cam r3 -o preproc-r3-00126242-nocorr.fits --nodarktrail
+desi_preproc -i ~/data/20220315/00126226/desi-00126226.fits.fz --cam r3 -o preproc-r3-00126226-nocorr.fits --nodarktrail
+
+n=20220310
+e=125691
+desi_preproc -i ~/data/$n/00$e/desi-00$e.fits.fz --cam r3 -o preproc-r3-00$e-nocorr.fits --nodarktrail
+desi_preproc -i ~/data/$n/00$e/desi-00$e.fits.fz --cam r3 -o preproc-r3-00$e-withcorr.fits
